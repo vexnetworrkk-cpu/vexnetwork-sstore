@@ -1,0 +1,8 @@
+# VexNetwork Store Plugin Configuration
+
+# The URL to your backend API endpoint
+api-url: "https://store.vexnetwork.fun/api/plugin"
+
+# The secret key to authenticate with your Node.js backend
+# This MUST match the PLUGIN_SECRET in your backend's .env file
+secret-key: "CHANGE_ME"

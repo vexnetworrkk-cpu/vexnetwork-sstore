@@ -1,0 +1,86 @@
+require('dotenv').config();
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const rateLimit = require('express-rate-limit');
+
+const authRoutes = require('./routes/auth');
+const packageRoutes = require('./routes/packages');
+const paymentRoutes = require('./routes/payments');
+const cartRoutes = require('./routes/cart');
+const adminAuthRoutes = require('./routes/adminAuth');
+const adminDataRoutes = require('./routes/adminData');
+const adminOrdersRoutes = require('./routes/adminOrders');
+const adminProductsRoutes = require('./routes/adminProducts');
+const adminCustomersRoutes = require('./routes/adminCustomers');
+const adminPaymentsRoutes = require('./routes/adminPayments');
+const adminCouponsRoutes = require('./routes/adminCoupons');
+const adminGiftCardsRoutes = require('./routes/adminGiftCards');
+const adminAnnouncementsRoutes = require('./routes/adminAnnouncements');
+const publicDataRoutes = require('./routes/publicData');
+const pluginAPIRoutes = require('./routes/pluginAPI');
+
+const app = express();
+
+// CORS configuration (Domain Locking)
+const allowedOrigins = [
+  'https://store.vexnetwork.fun',
+  process.env.FRONTEND_URL,
+  'http://localhost:5173'
+].filter(Boolean);
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
+app.use(express.json());
+
+// API Rate Limiting
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 150, // limit each IP to 150 requests per windowMs
+  message: { error: 'Too many requests from this IP, please try again after 15 minutes.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use('/api/', globalLimiter);
+
+// Database Connection
+mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/VexNetwork')
+  .then(() => console.log('Connected to MongoDB'))
+  .catch(err => console.error('MongoDB connection error:', err));
+
+// Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/packages', packageRoutes);
+app.use('/api/payments', paymentRoutes);
+app.use('/api/cart', cartRoutes);
+app.use('/api/admin', adminAuthRoutes);
+app.use('/api/admin/data', adminDataRoutes);
+app.use('/api/admin/orders', adminOrdersRoutes);
+app.use('/api/admin/products', adminProductsRoutes);
+app.use('/api/admin/customers', adminCustomersRoutes);
+app.use('/api/admin/payments', adminPaymentsRoutes);
+app.use('/api/admin/coupons', adminCouponsRoutes);
+app.use('/api/admin/giftcards', adminGiftCardsRoutes);
+app.use('/api/admin/announcements', adminAnnouncementsRoutes);
+
+// Public API
+app.use('/api/public', publicDataRoutes);
+app.use('/api/plugin', pluginAPIRoutes);
+
+// Health check
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', message: 'Minecraft Store API is running.' });
+});
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});

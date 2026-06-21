@@ -1,0 +1,238 @@
+/* cart-modal.css - Redesigned Sexy Cart UI */
+
+.cart-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+  animation: fadeIn 0.3s ease;
+}
+
+.cart-modal-content {
+  background: #2b2b36;
+  width: 100%;
+  max-width: 500px;
+  border-radius: 6px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+  overflow: hidden;
+  animation: slideInUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.cart-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  background: #24242d;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.cart-header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.cart-player-img {
+  width: 50px;
+  height: 50px;
+  image-rendering: pixelated;
+}
+
+.cart-player-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.cart-player-name {
+  color: #f59e0b;
+  font-size: 1.2rem;
+  margin: 0;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.cart-logout-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: none;
+  color: #ef4444;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  cursor: pointer;
+  align-self: flex-start;
+  transition: background 0.2s;
+}
+
+.cart-logout-btn:hover {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.cart-close-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: none;
+  color: #94a3b8;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.2s;
+}
+
+.cart-close-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.cart-modal-body {
+  padding: 2rem 1.5rem;
+  min-height: 150px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Empty Cart State */
+.cart-empty-title {
+  color: #ef4444;
+  font-size: 1.2rem;
+  text-align: center;
+  margin: 0 0 1rem 0;
+  font-weight: bold;
+}
+
+.cart-empty-text {
+  color: #cbd5e1;
+  text-align: center;
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* Filled Cart State */
+.cart-items-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-height: 250px;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Custom Scrollbar for Items */
+.cart-items-container::-webkit-scrollbar {
+  width: 6px;
+}
+.cart-items-container::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 4px;
+}
+.cart-items-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+.cart-items-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.cart-item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+}
+
+.cart-item-name {
+  color: #fff;
+  font-weight: bold;
+  font-size: 1rem;
+  flex: 1;
+}
+
+.cart-item-price {
+  color: #f59e0b;
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin-right: 1rem;
+}
+
+.cart-item-remove {
+  background: #ef4444;
+  color: white;
+  border: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background 0.2s;
+}
+
+.cart-item-remove:hover {
+  background: #dc2626;
+}
+
+.cart-total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 1rem;
+  margin-top: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.cart-total-label {
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.cart-total-value {
+  color: #f59e0b;
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+
+.cart-checkout-btn {
+  background: #f59e0b;
+  color: #fff;
+  border: none;
+  width: 100%;
+  padding: 1rem;
+  border-radius: 4px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.cart-checkout-btn:hover {
+  background: #d97706;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}

@@ -1,0 +1,6 @@
+name: VexStorePlugin
+version: 1.0-SNAPSHOT
+main: fun.vexnetwork.store.VexStorePlugin
+api-version: 1.13
+description: Connects VexNetwork Store to the Minecraft Server
+author: ViyomOG
