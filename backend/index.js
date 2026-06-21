@@ -80,6 +80,20 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Minecraft Store API is running.' });
 });
 
+// Root route
+app.get('/', (req, res) => {
+  res.send(`
+    <html>
+      <body style="font-family: system-ui, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #0f0f13; color: white;">
+        <div style="text-align: center; background: rgba(168,85,247,0.1); padding: 3rem; border-radius: 12px; border: 1px solid rgba(168,85,247,0.3);">
+          <h1 style="color: #a855f7; margin-bottom: 1rem;">VexNetwork Backend API</h1>
+          <p style="color: #9ca3af;">The backend server is online and running successfully.</p>
+        </div>
+      </body>
+    </html>
+  `);
+});
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
