@@ -27,10 +27,10 @@ const CartModal = ({ isOpen, onClose, username, onLogout }) => {
     }
   };
 
-  const handleRemove = async (packageId, index) => {
+  const handleRemove = async (packageId) => {
     try {
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-      const res = await axios.post(`${apiUrl}/api/cart/${username}/remove`, { packageId, index });
+      const res = await axios.post(`${apiUrl}/api/cart/${username}/remove`, { packageId });
       // The response returns an array of IDs, not populated objects, so we refetch
       fetchCart();
     } catch (err) {
@@ -52,6 +52,16 @@ const CartModal = ({ isOpen, onClose, username, onLogout }) => {
   };
 
   const totalPrice = cartItems.reduce((sum, item) => sum + (item.price || 0), 0);
+
+  const groupedItems = cartItems.reduce((acc, item) => {
+    const existing = acc.find(i => i._id === item._id);
+    if (existing) {
+      existing.quantity += 1;
+    } else {
+      acc.push({ ...item, quantity: 1 });
+    }
+    return acc;
+  }, []);
 
   return (
     <div className="cart-modal-overlay" onClick={handleBackdropClick}>
@@ -92,11 +102,11 @@ const CartModal = ({ isOpen, onClose, username, onLogout }) => {
             </>
           ) : (
             <div className="cart-items-container">
-              {cartItems.map((item, index) => (
+              {groupedItems.map((item, index) => (
                 <div key={`${item._id}-${index}`} className="cart-item-row">
-                  <div className="cart-item-name">{item.name}</div>
-                  <div className="cart-item-price">₹{item.price}</div>
-                  <button className="cart-item-remove" onClick={() => handleRemove(item._id, index)}>✖</button>
+                  <div className="cart-item-name">{item.name} {item.quantity > 1 && <span style={{ color: 'var(--primary-purple)', fontSize: '0.8rem', marginLeft: '0.5rem' }}>x{item.quantity}</span>}</div>
+                  <div className="cart-item-price">₹{item.price * item.quantity}</div>
+                  <button className="cart-item-remove" onClick={() => handleRemove(item._id)}>✖</button>
                 </div>
               ))}
               <div className="cart-total-row">

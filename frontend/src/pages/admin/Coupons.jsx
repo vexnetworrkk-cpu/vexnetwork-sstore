@@ -69,7 +69,8 @@ const Coupons = () => {
   };
 
   return (
-    <div className="animate-fade-up">
+    <>
+      <div className="animate-fade-up">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2rem' }}>
         <div>
           <h1 style={{ fontSize: '2rem', marginBottom: '0.2rem' }}>Discount Coupons</h1>
@@ -124,6 +125,7 @@ const Coupons = () => {
           </tbody>
         </table>
       </div>
+      </div>
 
       {showModal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
@@ -174,7 +176,7 @@ const Coupons = () => {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 

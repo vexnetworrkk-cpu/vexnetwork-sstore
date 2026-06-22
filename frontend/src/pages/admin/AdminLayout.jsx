@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Outlet, useNavigate, Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Users, ShoppingCart, PackageOpen, CreditCard, Ticket, Gift, Bell, LogOut, Star, Zap } from 'lucide-react';
+import { LayoutDashboard, Users, ShoppingCart, PackageOpen, CreditCard, Ticket, Gift, Bell, Star, Zap } from 'lucide-react';
+import { CiLogout } from "react-icons/ci";
 import axios from 'axios';
 import { toast } from '../../utils/toast';
 
@@ -63,7 +64,7 @@ const AdminLayout = () => {
   ];
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg-color)' }}>
+    <div style={{ display: 'flex', height: '100vh', width: '100vw', overflow: 'hidden', background: 'var(--bg-color)' }}>
       {/* Sidebar */}
       <aside style={{ 
         width: '250px', 
@@ -75,9 +76,14 @@ const AdminLayout = () => {
       }}>
         <div style={{ padding: '0 1.5rem', marginBottom: '2rem' }}>
           <h2 style={{ color: 'var(--accent-orange)', fontSize: '1.2rem', marginBottom: '0.2rem' }}>VexNetwork</h2>
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textTransform: 'uppercase', padding: '0.2rem 0.5rem', background: 'rgba(255,255,255,0.1)', borderRadius: '4px' }}>
-            {role} Portal
-          </span>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textTransform: 'uppercase', padding: '0.2rem 0.5rem', background: 'rgba(255,255,255,0.1)', borderRadius: '4px' }}>
+              {role} Portal
+            </span>
+            <button onClick={handleLogout} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--accent-red)', display: 'flex', alignItems: 'center', transition: 'transform 0.2s', marginTop: '-6px' }} title="Logout" onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.1)'} onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}>
+              <CiLogout size={26} />
+            </button>
+          </div>
         </div>
 
         <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem', padding: '0 1rem' }}>
@@ -108,29 +114,10 @@ const AdminLayout = () => {
           })}
         </nav>
 
-        <div style={{ padding: '0 1.5rem', marginTop: 'auto' }}>
-          <button 
-            onClick={handleLogout}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              color: 'var(--accent-red)',
-              background: 'transparent',
-              border: 'none',
-              cursor: 'pointer',
-              fontWeight: 'bold',
-              width: '100%',
-              padding: '0.75rem 0'
-            }}
-          >
-            <LogOut size={20} /> Logout
-          </button>
-        </div>
       </aside>
 
       {/* Main Content */}
-      <main style={{ flex: 1, padding: '2rem', overflowY: 'auto' }}>
+      <main style={{ flex: 1, padding: '2rem', overflowY: 'auto', overflowX: 'hidden', height: '100%' }}>
         <Outlet context={{ adminUser }} />
       </main>
     </div>

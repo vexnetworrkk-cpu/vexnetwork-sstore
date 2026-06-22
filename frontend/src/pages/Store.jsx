@@ -24,7 +24,7 @@ const Store = () => {
     fetchPackages();
   }, []);
 
-  const handlePurchase = async (pkgId) => {
+  const handlePurchase = async (pkgId, quantity = 1) => {
     const username = localStorage.getItem('mc_username');
     if (!username) {
       toast.error('Please login first to add items to your cart');
@@ -34,7 +34,7 @@ const Store = () => {
 
     try {
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-      await axios.post(`${apiUrl}/api/cart/${username}/add`, { packageId: pkgId });
+      await axios.post(`${apiUrl}/api/cart/${username}/add`, { packageId: pkgId, quantity });
       window.dispatchEvent(new Event('openCart'));
     } catch (err) {
       console.error('Error adding to cart:', err);

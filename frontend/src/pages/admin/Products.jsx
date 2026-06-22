@@ -183,7 +183,8 @@ const Products = () => {
   if (loading) return <div className="flex-center" style={{ minHeight: '60vh' }}>Loading Products...</div>;
 
   return (
-    <div className="animate-fade-up">
+    <>
+      <div className="animate-fade-up">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2rem' }}>
         <div>
           <h1 style={{ fontSize: '2rem', marginBottom: '0.2rem' }}>Store Editor</h1>
@@ -272,7 +273,8 @@ const Products = () => {
           </tbody>
         </table>
       </div>
-
+      </div>
+      
       {/* CREATE / EDIT MODAL */}
       {showModal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
@@ -296,8 +298,10 @@ const Products = () => {
                   <select required value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} style={{ width: '100%', padding: '0.75rem', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#fff', outline: 'none' }}>
                     <option value="survival-rank" style={{ background: '#1f2937', color: '#fff' }}>Survival - Ranks</option>
                     <option value="survival-coin" style={{ background: '#1f2937', color: '#fff' }}>Survival - Coins</option>
+                    <option value="survival-key" style={{ background: '#1f2937', color: '#fff' }}>Survival - Keys</option>
                     <option value="lifesteal-rank" style={{ background: '#1f2937', color: '#fff' }}>Lifesteal - Ranks</option>
                     <option value="lifesteal-coin" style={{ background: '#1f2937', color: '#fff' }}>Lifesteal - Coins</option>
+                    <option value="lifesteal-key" style={{ background: '#1f2937', color: '#fff' }}>Lifesteal - Keys</option>
                   </select>
                 </div>
                 <div>
@@ -377,8 +381,7 @@ const Products = () => {
           </div>
         </div>
       )}
-
-    </div>
+    </>
   );
 };
 

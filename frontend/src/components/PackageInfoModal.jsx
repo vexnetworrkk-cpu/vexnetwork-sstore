@@ -1,31 +1,22 @@
 import React, { useState } from 'react';
 import { FaTimes, FaGift } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 const PackageInfoModal = ({ pkg, imgSrc, onClose, onPurchase }) => {
-  const [showToast, setShowToast] = useState(false);
+  const navigate = useNavigate();
+  const [quantity, setQuantity] = useState(1);
 
   if (!pkg) return null;
 
   const info = pkg.infoDetails || { perks: [], commands: [], others: [], note: '' };
 
   const handleGiftClick = () => {
-    setShowToast(true);
-    setTimeout(() => {
-      setShowToast(false);
-    }, 3000);
+    onClose();
+    navigate('/checkout', { state: { packageId: pkg._id, isGift: true } });
   };
 
   return (
     <div className="info-modal-overlay" onClick={onClose}>
-      {showToast && (
-        <div className="sexy-toast">
-          <div className="toast-icon"><FaGift /></div>
-          <div className="toast-content">
-            <h4>Coming Soon!</h4>
-            <p>The gifting feature is currently under development.</p>
-          </div>
-        </div>
-      )}
       <div className="info-modal-content" onClick={(e) => e.stopPropagation()}>
         <button className="info-modal-close" onClick={onClose}>
           <FaTimes />
@@ -40,13 +31,28 @@ const PackageInfoModal = ({ pkg, imgSrc, onClose, onPurchase }) => {
             <h2 className="info-modal-title">{pkg.name}</h2>
             <div className="info-modal-price">{pkg.price} INR</div>
             
+            {pkg.category && pkg.category.includes('key') && (
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem', marginBottom: '1rem', marginTop: '1rem' }}>
+                <button 
+                  onClick={() => setQuantity(q => Math.max(1, q - 1))}
+                  style={{ background: '#374151', border: 'none', color: 'white', width: '30px', height: '30px', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                >-</button>
+                <span style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{quantity}</span>
+                <button 
+                  onClick={() => setQuantity(q => Math.min(10, q + 1))}
+                  style={{ background: '#374151', border: 'none', color: 'white', width: '30px', height: '30px', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                >+</button>
+              </div>
+            )}
+            
             <button 
               className="info-modal-btn-cart" 
-              onClick={() => { onPurchase(pkg._id); onClose(); }}
+              onClick={() => { onPurchase(pkg._id, quantity); onClose(); }}
               disabled={pkg.active === false}
               style={{
                 background: pkg.active === false ? '#4b5563' : 'var(--accent-orange)',
-                cursor: pkg.active === false ? 'not-allowed' : 'pointer'
+                cursor: pkg.active === false ? 'not-allowed' : 'pointer',
+                marginTop: pkg.category && pkg.category.includes('key') ? '0' : '1rem'
               }}
             >
               {pkg.active === false ? 'OUT OF STOCK' : 'Add to cart'}

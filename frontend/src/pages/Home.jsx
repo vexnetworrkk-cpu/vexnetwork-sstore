@@ -9,6 +9,8 @@ import logoImg from '../assets/logo.png';
 import coinImg from '../assets/coin.png';
 import rank1Img from '../assets/rank (1).png';
 import rank2Img from '../assets/rank (2).png';
+import key1Img from '../assets/key1.png';
+import key2Img from '../assets/key2.png';
 import PackageCard from '../components/PackageCard';
 
 const Home = () => {
@@ -46,7 +48,7 @@ const Home = () => {
     }
   };
 
-  const handlePurchase = async (pkgId) => {
+  const handlePurchase = async (pkgId, quantity = 1) => {
     const username = localStorage.getItem('mc_username');
     if (!username) {
       toast.error('Please login first to add items to your cart');
@@ -56,7 +58,7 @@ const Home = () => {
     
     try {
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-      await axios.post(`${apiUrl}/api/cart/${username}/add`, { packageId: pkgId });
+      await axios.post(`${apiUrl}/api/cart/${username}/add`, { packageId: pkgId, quantity });
       toast.success('Added to cart!');
       window.dispatchEvent(new Event('openCart'));
     } catch (err) {
@@ -83,6 +85,11 @@ const Home = () => {
                 <img src={rank1Img} alt="Lifesteal Rank" /> Lifesteal Ranks
               </div>
             </Link>
+            <Link to="/category/lifesteal-key" style={{ textDecoration: 'none' }}>
+              <div className="sidebar-item">
+                <img src={key1Img} alt="Lifesteal Key" /> Lifesteal Keys
+              </div>
+            </Link>
             <Link to="/category/survival-coin" style={{ textDecoration: 'none' }}>
               <div className="sidebar-item">
                 <img src={coinImg} alt="Coins" /> Coins [Survival]
@@ -91,6 +98,11 @@ const Home = () => {
             <Link to="/category/survival-rank" style={{ textDecoration: 'none' }}>
               <div className="sidebar-item">
                 <img src={rank2Img} alt="Survival Rank" /> Survival Ranks
+              </div>
+            </Link>
+            <Link to="/category/survival-key" style={{ textDecoration: 'none' }}>
+              <div className="sidebar-item">
+                <img src={key2Img} alt="Survival Key" /> Survival Keys
               </div>
             </Link>
           </div>

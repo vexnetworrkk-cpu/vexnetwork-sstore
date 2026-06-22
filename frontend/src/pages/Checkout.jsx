@@ -25,7 +25,7 @@ const Checkout = () => {
   const [giftCardCode, setGiftCardCode] = useState('');
   const [couponCode, setCouponCode] = useState('');
   const [appliedDiscount, setAppliedDiscount] = useState(0);
-  const [isGift, setIsGift] = useState(false);
+  const [isGift, setIsGift] = useState(location.state?.isGift || false);
   const [giftUsername, setGiftUsername] = useState('');
   const { flashSale } = useFlashSale();
 
@@ -63,12 +63,20 @@ const Checkout = () => {
     }
   };
 
-  const handleRemoveItem = async (pkgId, idx) => {
+  const handleRemoveItem = async (pkgId) => {
     if (!isCartCheckout) return;
     try {
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-      await axios.post(`${apiUrl}/api/cart/${username}/remove`, { packageId: pkgId, index: idx });
-      setCartItems(prev => prev.filter((_, i) => i !== idx));
+      await axios.post(`${apiUrl}/api/cart/${username}/remove`, { packageId: pkgId });
+      
+      const indexToRemove = cartItems.findIndex(i => i._id === pkgId);
+      if (indexToRemove !== -1) {
+         setCartItems(prev => {
+           const newCart = [...prev];
+           newCart.splice(indexToRemove, 1);
+           return newCart;
+         });
+      }
       toast.success('Item removed from checkout');
     } catch (err) {
       console.error(err);
@@ -244,6 +252,16 @@ const Checkout = () => {
   const storeDiscount = gstAmount; // Discount cancels out GST exactly
   const finalTotal = Math.max(0, subtotal + gstAmount - storeDiscount - appliedDiscount);
 
+  const groupedItems = cartItems.reduce((acc, item) => {
+    const existing = acc.find(i => i._id === item._id);
+    if (existing) {
+      existing.quantity += 1;
+    } else {
+      acc.push({ ...item, quantity: 1 });
+    }
+    return acc;
+  }, []);
+
   return (
     <div className="checkout-page-container animate-fade-up">
       <div className="checkout-header" style={{ position: 'relative' }}>
@@ -265,14 +283,14 @@ const Checkout = () => {
           
           <div className="checkout-items-list">
             {isCartCheckout ? (
-              cartItems.map((item, idx) => (
+              groupedItems.map((item, idx) => (
                 <div key={`${item._id}-${idx}`} className="checkout-item-card">
                   <div className="checkout-item-details">
                     <div className="checkout-item-icon" style={{ overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: item.imageUrl ? '0' : '1rem' }}>
                       {item.imageUrl ? <img src={item.imageUrl} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '8px' }} /> : <ShoppingCart size={24} color="#d8b4fe" />}
                     </div>
                     <div className="checkout-item-info">
-                      <h4 style={{ color: item.color || '#fff' }}>{item.name}</h4>
+                      <h4 style={{ color: item.color || '#fff' }}>{item.name} {item.quantity > 1 && <span style={{ color: 'var(--primary-purple)', fontSize: '0.9rem', marginLeft: '0.5rem' }}>x{item.quantity}</span>}</h4>
                       <p>{item.category.replace('-', ' ')}</p>
                     </div>
                   </div>
@@ -280,14 +298,14 @@ const Checkout = () => {
                     <div className="checkout-item-price">
                       {isSaleActive ? (
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-                          <span style={{ textDecoration: 'line-through', color: 'var(--text-muted)', fontSize: '0.8rem' }}>₹{item.price.toFixed(2)}</span>
-                          <span style={{ color: '#10b981' }}>₹{(item.price - (item.price * (flashSale.discountPercent / 100))).toFixed(2)}</span>
+                          <span style={{ textDecoration: 'line-through', color: 'var(--text-muted)', fontSize: '0.8rem' }}>₹{(item.price * item.quantity).toFixed(2)}</span>
+                          <span style={{ color: '#10b981' }}>₹{((item.price * item.quantity) - ((item.price * item.quantity) * (flashSale.discountPercent / 100))).toFixed(2)}</span>
                         </div>
                       ) : (
-                        `₹${item.price.toFixed(2)}`
+                        `₹${(item.price * item.quantity).toFixed(2)}`
                       )}
                     </div>
-                    <button className="checkout-item-remove" onClick={() => handleRemoveItem(item._id, idx)}>
+                    <button className="checkout-item-remove" onClick={() => handleRemoveItem(item._id)}>
                       <Trash2 size={14} /> Remove
                     </button>
                   </div>

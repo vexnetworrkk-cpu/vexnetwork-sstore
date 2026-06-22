@@ -50,7 +50,7 @@ router.post('/', authAdmin(['owner', 'dev']), upload.single('image'), async (req
     if (req.file && fs.existsSync(req.file.path)) {
       fs.unlinkSync(req.file.path);
     }
-    res.status(500).json({ error: 'Failed to upload image' });
+    res.status(500).json({ error: 'Failed to upload image', details: error.message });
   }
 });
 

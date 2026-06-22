@@ -4,6 +4,9 @@ import axios from 'axios';
 import coinImg from '../assets/coin.png';
 import rank1Img from '../assets/rank (1).png';
 import rank2Img from '../assets/rank (2).png';
+import key1Img from '../assets/key1.png';
+import key2Img from '../assets/key2.png';
+import { FaGift as GiftIcon } from 'react-icons/fa';
 import PackageCard from '../components/PackageCard';
 import { toast } from '../utils/toast';
 
@@ -30,7 +33,7 @@ const Category = () => {
     fetchPackages();
   }, [categoryId]);
 
-  const handlePurchase = async (pkgId) => {
+  const handlePurchase = async (pkgId, quantity = 1) => {
     const username = localStorage.getItem('mc_username');
     if (!username) {
       toast.error('Please login first to add items to your cart');
@@ -40,7 +43,7 @@ const Category = () => {
     
     try {
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-      await axios.post(`${apiUrl}/api/cart/${username}/add`, { packageId: pkgId });
+      await axios.post(`${apiUrl}/api/cart/${username}/add`, { packageId: pkgId, quantity });
       window.dispatchEvent(new Event('openCart'));
     } catch (err) {
       console.error('Error adding to cart:', err);
@@ -52,8 +55,10 @@ const Category = () => {
     switch (categoryId) {
       case 'lifesteal-coin': return 'Coins [LifeSteal]';
       case 'lifesteal-rank': return 'Lifesteal Ranks';
+      case 'lifesteal-key': return 'Lifesteal Keys';
       case 'survival-coin': return 'Coins [Survival]';
       case 'survival-rank': return 'Survival Ranks';
+      case 'survival-key': return 'Survival Keys';
       default: return categoryId;
     }
   };
@@ -77,6 +82,11 @@ const Category = () => {
                 <img src={rank1Img} alt="Lifesteal Rank" /> Lifesteal Ranks
               </div>
             </Link>
+            <Link to="/category/lifesteal-key" style={{ textDecoration: 'none' }}>
+              <div className={`sidebar-item ${categoryId === 'lifesteal-key' ? 'active' : ''}`}>
+                <img src={key1Img} alt="Lifesteal Key" /> Lifesteal Keys
+              </div>
+            </Link>
             <Link to="/category/survival-coin" style={{ textDecoration: 'none' }}>
               <div className={`sidebar-item ${categoryId === 'survival-coin' ? 'active' : ''}`}>
                 <img src={coinImg} alt="Coins" /> Coins [Survival]
@@ -85,6 +95,11 @@ const Category = () => {
             <Link to="/category/survival-rank" style={{ textDecoration: 'none' }}>
               <div className={`sidebar-item ${categoryId === 'survival-rank' ? 'active' : ''}`}>
                 <img src={rank2Img} alt="Survival Rank" /> Survival Ranks
+              </div>
+            </Link>
+            <Link to="/category/survival-key" style={{ textDecoration: 'none' }}>
+              <div className={`sidebar-item ${categoryId === 'survival-key' ? 'active' : ''}`}>
+                <img src={key2Img} alt="Survival Key" /> Survival Keys
               </div>
             </Link>
           </div>

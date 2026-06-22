@@ -24,7 +24,7 @@ router.get('/:username', async (req, res) => {
 router.post('/:username/add', async (req, res) => {
   try {
     const { username } = req.params;
-    const { packageId } = req.body;
+    const { packageId, quantity = 1 } = req.body;
 
     if (!packageId) return res.status(400).json({ error: 'Package ID is required' });
 
@@ -33,10 +33,10 @@ router.post('/:username/add', async (req, res) => {
       user = new User({ username });
     }
 
-    // Check if package is already in cart to prevent duplicates if desired
-    // Or allow duplicates if they want multiple. Let's allow duplicates for now, or prevent it?
-    // Usually ranks are 1 time. Let's just push it.
-    user.cart.push(packageId);
+    const numToAdd = Math.max(1, Math.min(10, parseInt(quantity) || 1));
+    for (let i = 0; i < numToAdd; i++) {
+      user.cart.push(packageId);
+    }
     await user.save();
 
     res.json({ message: 'Added to cart', cart: user.cart });
