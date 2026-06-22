@@ -133,8 +133,7 @@ const Products = () => {
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
       const res = await axios.post(`${apiUrl}/api/upload`, uploadData, {
         headers: { 
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data'
+          Authorization: `Bearer ${token}`
         }
       });
       setFormData(prev => ({ ...prev, imageUrl: res.data.imageUrl }));
