@@ -101,7 +101,7 @@ router.post('/create', async (req, res) => {
       if (!user || user.cart.length === 0) {
         return res.status(400).json({ error: 'Cart is empty or user not found' });
       }
-      amount = user.cart.reduce((sum, item) => sum + (item.price || 0), 0);
+      amount = user.cart.reduce((sum, item) => sum + (item?.price || 0), 0);
       description = `Cart checkout for ${username}`;
       cartItems = user.cart.map(item => item._id);
     } else {
