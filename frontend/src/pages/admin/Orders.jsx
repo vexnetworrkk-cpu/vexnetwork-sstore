@@ -10,15 +10,18 @@ const Orders = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   const fetchOrders = async () => {
     try {
       const token = localStorage.getItem('admin_token');
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-      const res = await axios.get(`${apiUrl}/api/admin/orders`, {
+      const res = await axios.get(`${apiUrl}/api/admin/orders?page=${currentPage}&limit=10`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setOrders(res.data);
+      setOrders(res.data.orders || []);
+      setTotalPages(res.data.totalPages || 1);
     } catch (err) {
       toast.error('Failed to load orders');
     } finally {
@@ -28,7 +31,7 @@ const Orders = () => {
 
   useEffect(() => {
     fetchOrders();
-  }, []);
+  }, [currentPage]);
 
   const handleAction = async (orderId, actionType) => {
     const token = localStorage.getItem('admin_token');
@@ -175,6 +178,39 @@ const Orders = () => {
           </tbody>
         </table>
       </div>
+
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1.5rem', background: 'var(--panel-bg)', padding: '1rem', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+          <button 
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+            style={{ 
+              padding: '0.5rem 1rem', background: currentPage === 1 ? 'transparent' : 'rgba(255,255,255,0.05)', 
+              color: currentPage === 1 ? 'var(--text-muted)' : '#fff', border: '1px solid var(--border-color)', 
+              borderRadius: '8px', cursor: currentPage === 1 ? 'not-allowed' : 'pointer', fontWeight: 'bold' 
+            }}
+          >
+            Previous
+          </button>
+          
+          <div style={{ color: 'var(--text-muted)', fontWeight: 'bold' }}>
+            Page <span style={{ color: '#fff' }}>{currentPage}</span> of <span style={{ color: '#fff' }}>{totalPages}</span>
+          </div>
+
+          <button 
+            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+            style={{ 
+              padding: '0.5rem 1rem', background: currentPage === totalPages ? 'transparent' : 'rgba(255,255,255,0.05)', 
+              color: currentPage === totalPages ? 'var(--text-muted)' : '#fff', border: '1px solid var(--border-color)', 
+              borderRadius: '8px', cursor: currentPage === totalPages ? 'not-allowed' : 'pointer', fontWeight: 'bold' 
+            }}
+          >
+            Next
+          </button>
+        </div>
+      )}
 
       {/* View Details Modal */}
       {selectedOrder && (

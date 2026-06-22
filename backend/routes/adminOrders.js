@@ -6,13 +6,26 @@ const Order = require('../models/Order');
 // GET all orders
 router.get('/', authAdmin(['owner', 'dev', 'staff']), async (req, res) => {
   try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const totalOrders = await Order.countDocuments();
+    const totalPages = Math.ceil(totalOrders / limit);
+
     const orders = await Order.find()
       .populate('cartItems')
       .populate('packageId')
       .sort({ createdAt: -1 })
-      .limit(100);
+      .skip(skip)
+      .limit(limit);
       
-    res.json(orders);
+    res.json({
+      orders,
+      totalPages,
+      currentPage: page,
+      totalOrders
+    });
   } catch (error) {
     console.error('Fetch Orders Error:', error);
     res.status(500).json({ error: 'Server error fetching orders' });
