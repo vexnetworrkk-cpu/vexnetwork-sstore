@@ -28,7 +28,12 @@ const upload = multer({ storage: storage });
 
 router.post('/', authAdmin(['owner', 'dev']), upload.single('image'), async (req, res) => {
   try {
+    console.log('--- Upload Request Started ---');
+    console.log('File received by multer:', req.file);
+    console.log('Request headers (content-type):', req.headers['content-type']);
+
     if (!req.file) {
+      console.error('Upload failed: No image file provided');
       return res.status(400).json({ error: 'No image file provided' });
     }
 
@@ -37,12 +42,15 @@ router.post('/', authAdmin(['owner', 'dev']), upload.single('image'), async (req
     }
 
     // Upload to Cloudinary
+    console.log('Uploading to Cloudinary from path:', req.file.path);
     const result = await cloudinary.uploader.upload(req.file.path, {
       folder: 'vexnetwork_store'
     });
+    console.log('Cloudinary upload successful. URL:', result.secure_url);
 
     // Delete temporary file
     fs.unlinkSync(req.file.path);
+    console.log('Temporary file deleted');
 
     res.json({ imageUrl: result.secure_url });
   } catch (error) {

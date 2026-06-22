@@ -4,6 +4,33 @@ import axios from 'axios';
 import { Plus, Edit2, Copy, Trash2, Search, XCircle, Tag, Check, X } from 'lucide-react';
 import { toast } from '../../utils/toast';
 
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null, errorInfo: null };
+  }
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+  componentDidCatch(error, errorInfo) {
+    console.error("ErrorBoundary caught an error", error, errorInfo);
+    this.setState({ errorInfo });
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ padding: '2rem', background: '#ff000033', color: 'white', borderRadius: '8px' }}>
+          <h2>Something went wrong in the Modal.</h2>
+          <pre style={{ whiteSpace: 'pre-wrap' }}>{this.state.error && this.state.error.toString()}</pre>
+          <pre style={{ whiteSpace: 'pre-wrap', fontSize: '0.8rem' }}>{this.state.errorInfo && this.state.errorInfo.componentStack}</pre>
+          <button onClick={() => this.setState({ hasError: false })}>Try Again</button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 const Products = () => {
   const { adminUser } = useOutletContext();
   const [products, setProducts] = useState([]);
@@ -32,6 +59,7 @@ const Products = () => {
     },
     active: true
   });
+  const [isUploading, setIsUploading] = useState(false);
 
   const fetchProducts = async () => {
     try {
@@ -127,7 +155,13 @@ const Products = () => {
     const uploadData = new FormData();
     uploadData.append('image', file);
 
-    const toastId = toast.loading('Uploading image...');
+    console.log('--- Frontend Upload Started ---');
+    console.log('Selected file name:', file.name);
+    console.log('Selected file type:', file.type);
+    console.log('Selected file size:', file.size, 'bytes');
+
+    setIsUploading(true);
+    toast.info('Uploading image...');
     try {
       const token = localStorage.getItem('admin_token');
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -137,11 +171,13 @@ const Products = () => {
         }
       });
       setFormData(prev => ({ ...prev, imageUrl: res.data.imageUrl }));
-      toast.dismiss(toastId);
+      console.log('Upload successful! Cloudinary URL:', res.data.imageUrl);
       toast.success('Image uploaded successfully');
     } catch (err) {
-      toast.dismiss(toastId);
+      console.error('Upload failed on frontend:', err.response?.data || err.message);
       toast.error(err.response?.data?.error || 'Failed to upload image');
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -277,6 +313,7 @@ const Products = () => {
       {/* CREATE / EDIT MODAL */}
       {showModal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+          <ErrorBoundary>
           <div className="glass-panel animate-fade-up" style={{ width: '100%', maxWidth: '800px', maxHeight: '90vh', overflowY: 'auto', background: 'var(--panel-bg)', padding: '2rem', borderRadius: '16px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', paddingBottom: '1rem', marginBottom: '1.5rem' }}>
               <h2 style={{ fontSize: '1.5rem' }}>{editingProduct ? 'Edit Product' : 'Create New Product'}</h2>
@@ -371,13 +408,29 @@ const Products = () => {
                 <input type="text" value={formData.infoDetails.note} onChange={e => setFormData({...formData, infoDetails: {...formData.infoDetails, note: e.target.value}})} style={{ width: '100%', padding: '0.75rem', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#fff' }} />
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '1rem' }}>
-                <button type="button" onClick={() => setShowModal(false)} style={{ padding: '0.75rem 1.5rem', background: 'transparent', border: '1px solid var(--border-color)', color: '#fff', borderRadius: '8px', cursor: 'pointer' }}>Cancel</button>
-                <button type="submit" style={{ padding: '0.75rem 1.5rem', background: 'var(--accent-orange)', border: 'none', color: '#fff', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}>{editingProduct ? 'Save Changes' : 'Create Product'}</button>
+              <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem' }}>
+                <button type="button" onClick={() => setShowModal(false)} style={{ flex: 1, padding: '1rem', background: 'transparent', border: '1px solid var(--border-color)', color: '#fff', borderRadius: '8px', cursor: 'pointer' }}>Cancel</button>
+                <button 
+                  type="submit" 
+                  disabled={isUploading}
+                  style={{ 
+                    flex: 1, 
+                    padding: '1rem', 
+                    background: isUploading ? '#6b7280' : 'var(--accent-orange)', 
+                    color: '#fff', 
+                    border: 'none', 
+                    borderRadius: '8px', 
+                    fontWeight: 'bold', 
+                    cursor: isUploading ? 'not-allowed' : 'pointer' 
+                  }}
+                >
+                  {isUploading ? 'Uploading Image...' : (editingProduct ? 'Update Product' : 'Create Product')}
+                </button>
               </div>
 
             </form>
           </div>
+          </ErrorBoundary>
         </div>
       )}
     </>
