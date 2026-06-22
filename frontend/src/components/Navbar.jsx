@@ -10,8 +10,13 @@ const Navbar = () => {
 
   useEffect(() => {
     const handleOpenCart = () => setIsCartModalOpen(true);
+    const handleOpenLogin = () => setIsLoginModalOpen(true);
     window.addEventListener('openCart', handleOpenCart);
-    return () => window.removeEventListener('openCart', handleOpenCart);
+    window.addEventListener('openLogin', handleOpenLogin);
+    return () => {
+      window.removeEventListener('openCart', handleOpenCart);
+      window.removeEventListener('openLogin', handleOpenLogin);
+    };
   }, []);
 
   const handleLoginClick = () => {

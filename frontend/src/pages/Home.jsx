@@ -46,8 +46,22 @@ const Home = () => {
     }
   };
 
-  const handlePurchase = (pkgId) => {
-    navigate('/checkout', { state: { packageId: pkgId } });
+  const handlePurchase = async (pkgId) => {
+    const username = localStorage.getItem('mc_username');
+    if (!username) {
+      toast.error('Please login first to add items to your cart');
+      window.dispatchEvent(new Event('openLogin'));
+      return;
+    }
+    
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      await axios.post(`${apiUrl}/api/cart/${username}/add`, { packageId: pkgId });
+      toast.success('Added to cart!');
+      window.dispatchEvent(new Event('openCart'));
+    } catch (err) {
+      toast.error('Failed to add to cart');
+    }
   };
 
   return (

@@ -33,10 +33,11 @@ const Category = () => {
   const handlePurchase = async (pkgId) => {
     const username = localStorage.getItem('mc_username');
     if (!username) {
-      toast.error('Please login to add to cart!');
+      toast.error('Please login first to add items to your cart');
+      window.dispatchEvent(new Event('openLogin'));
       return;
     }
-
+    
     try {
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
       await axios.post(`${apiUrl}/api/cart/${username}/add`, { packageId: pkgId });
