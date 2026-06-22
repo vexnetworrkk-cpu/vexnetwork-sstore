@@ -43,6 +43,17 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// Global Security Headers Middleware
+app.use((req, res, next) => {
+  res.setHeader('Content-Security-Policy', "default-src 'self'; img-src 'self' data: https:; font-src 'self' data: https:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; connect-src 'self' https: wss:; object-src 'none'; frame-ancestors 'none';");
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  next();
+});
+
 // API Rate Limiting
 app.set('trust proxy', 1);
 const globalLimiter = rateLimit({
